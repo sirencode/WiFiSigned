@@ -37,7 +37,7 @@ public class MainActivity extends Activity implements View.OnClickListener
                 wifiSigned();
                 break;
             case R.id.gps_btn:
-
+                gpsSigned();
                 break;
             default:
                 break;
@@ -68,24 +68,21 @@ public class MainActivity extends Activity implements View.OnClickListener
 
     private void gpsSigned()
     {
-        SignInByWifi signInByWifi = new SignInByWifi(this);
-        if (signInByWifi.isNearby())
+        SignInByGPS signInByGPS = new SignInByGPS(getApplicationContext());
+        signInByGPS.setMyLocationListener(new SignInByGPS.MyLocationListener()
         {
-            String wifiList = "";
-            for (int i = 0; i < Config.WIFILIST.length; i++)
+
+            @Override
+            public void onFinished(int dist)
             {
-                wifiList += Config.WIFILIST[i];
+                if (dist <= Config.DIS_VALUE)
+                {
+                    textView.setText("您距离签到的距离为：" + dist+"\nGPS签到成功");
+                }
             }
-            textView.setText("签到成功\n签到方式：WIFI签到\n成功扫描到您在指定WIFI附近\n指定WiFi：" + wifiList);
-        } else
-        {
-            String wifiList = "";
-            for (int i = 0; i < Config.WIFILIST.length; i++)
-            {
-                wifiList += Config.WIFILIST[i];
-            }
-            textView.setText("签到失败\n签到方式：WIFI签到\n扫描到您不在指定WIFI附近\n指定WiFi：" + wifiList);
-        }
+        });
+        signInByGPS.initLocation();
+
     }
 
 }
